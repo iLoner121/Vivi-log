@@ -1,95 +1,147 @@
 import { Snake } from '../../shared/types/snake';
 
-// 模拟数据，仅用于开发测试
-const mockSnakes: Snake[] = [
-  {
-    id: 1,
-    name: '小白',
-    code: 'S001',
-    species: '球蟒',
-    gender: 'male',
-    birthDate: new Date('2021-01-01'),
-    source: '宠物店',
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-];
-
-let nextId = 2;
-
-// 开发环境下使用模拟数据
+// 开发环境检测
 const isDev = process.env.NODE_ENV === 'development';
+
+// 模拟数据持久化存储
+class LocalStorageDB {
+  private storageKey = 'vivi-log-snakes';
+  private snakes: Snake[] = [];
+  private nextId = 1;
+
+  constructor() {
+    this.loadFromStorage();
+  }
+
+  private loadFromStorage() {
+    try {
+      const data = localStorage.getItem(this.storageKey);
+      if (data) {
+        this.snakes = JSON.parse(data).map((s: any) => ({
+          ...s,
+          birthDate: new Date(s.birthDate),
+          createdAt: s.createdAt ? new Date(s.createdAt) : undefined,
+          updatedAt: s.updatedAt ? new Date(s.updatedAt) : undefined
+        }));
+        
+        // 找出最大ID，用于自增ID计算
+        this.nextId = this.snakes.reduce((max, snake) => Math.max(max, (snake.id || 0) + 1), 1);
+      }
+    } catch (error) {
+      console.error('从LocalStorage加载数据失败:', error);
+      this.snakes = [];
+    }
+  }
+
+  private saveToStorage() {
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(this.snakes));
+    } catch (error) {
+      console.error('保存数据到LocalStorage失败:', error);
+    }
+  }
+
+  getAll(): Snake[] {
+    return [...this.snakes];
+  }
+
+  getById(id: number): Snake {
+    const snake = this.snakes.find(s => s.id === id);
+    if (!snake) throw new Error('爬宠不存在');
+    return {...snake};
+  }
+
+  create(data: Omit<Snake, 'id' | 'createdAt' | 'updatedAt'>): Snake {
+    const newSnake: Snake = {
+      ...data,
+      id: this.nextId++,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.snakes.push(newSnake);
+    this.saveToStorage();
+    return {...newSnake};
+  }
+
+  update(id: number, data: Partial<Snake>): Snake {
+    const index = this.snakes.findIndex(s => s.id === id);
+    if (index === -1) throw new Error('爬宠不存在');
+    
+    this.snakes[index] = {
+      ...this.snakes[index],
+      ...data,
+      updatedAt: new Date()
+    };
+    this.saveToStorage();
+    return {...this.snakes[index]};
+  }
+
+  delete(id: number): void {
+    const index = this.snakes.findIndex(s => s.id === id);
+    if (index === -1) throw new Error('爬宠不存在');
+    this.snakes.splice(index, 1);
+    this.saveToStorage();
+  }
+}
+
+// 创建持久化数据库实例
+const localDb = new LocalStorageDB();
 
 declare global {
   interface Window {
-    api: {
+    api?: {
       invoke(channel: string, ...args: any[]): Promise<any>;
     };
   }
 }
 
+// 检查API是否可用，开发环境下不会抛出错误
 const checkApi = () => {
-  console.log('Checking window.api...');
-  console.log('window.api:', window.api);
-  if (!window.api) {
+  if (isDev) {
+    if (!window.api) {
+      console.warn('开发环境中 window.api 未初始化，使用 localStorage 存储数据');
+      return false;
+    }
+  } else if (!window.api) {
     throw new Error('window.api 未初始化，请检查 preload 脚本是否正确加载');
   }
+  return true;
 };
 
 export const snakeApi = {
   async getAll(): Promise<Snake[]> {
-    if (isDev) {
-      console.log('开发环境使用模拟数据');
-      return Promise.resolve([...mockSnakes]);
+    if (isDev && !checkApi()) {
+      console.log('开发环境使用 localStorage 存储的数据');
+      return Promise.resolve(localDb.getAll());
     }
-    return window.api.invoke('snake:getAll');
+    return window.api!.invoke('snake:getAll');
   },
 
   async getById(id: number): Promise<Snake> {
-    if (isDev) {
-      const snake = mockSnakes.find(s => s.id === id);
-      if (!snake) throw new Error('爬宠不存在');
-      return Promise.resolve({...snake});
+    if (isDev && !checkApi()) {
+      return Promise.resolve(localDb.getById(id));
     }
-    return window.api.invoke('snake:getById', id);
+    return window.api!.invoke('snake:getById', id);
   },
 
   async create(data: Omit<Snake, 'id' | 'createdAt' | 'updatedAt'>): Promise<Snake> {
-    if (isDev) {
-      const newSnake: Snake = {
-        ...data,
-        id: nextId++,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      mockSnakes.push(newSnake);
-      return Promise.resolve({...newSnake});
+    if (isDev && !checkApi()) {
+      return Promise.resolve(localDb.create(data));
     }
-    return window.api.invoke('snake:create', data);
+    return window.api!.invoke('snake:create', data);
   },
 
   async update(id: number, data: Partial<Snake>): Promise<Snake> {
-    if (isDev) {
-      const index = mockSnakes.findIndex(s => s.id === id);
-      if (index === -1) throw new Error('爬宠不存在');
-      
-      mockSnakes[index] = {
-        ...mockSnakes[index],
-        ...data,
-        updatedAt: new Date()
-      };
-      return Promise.resolve({...mockSnakes[index]});
+    if (isDev && !checkApi()) {
+      return Promise.resolve(localDb.update(id, data));
     }
-    return window.api.invoke('snake:update', id, data);
+    return window.api!.invoke('snake:update', id, data);
   },
 
   async delete(id: number): Promise<void> {
-    if (isDev) {
-      const index = mockSnakes.findIndex(s => s.id === id);
-      if (index === -1) throw new Error('爬宠不存在');
-      mockSnakes.splice(index, 1);
-      return Promise.resolve();
+    if (isDev && !checkApi()) {
+      return Promise.resolve(localDb.delete(id));
     }
-    return window.api.invoke('snake:delete', id);
+    return window.api!.invoke('snake:delete', id);
   },
 }; 
