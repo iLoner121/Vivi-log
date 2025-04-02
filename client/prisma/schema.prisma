@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// 爬宠模型
+model Snake {
+  id          Int       @id @default(autoincrement())
+  name        String    // 昵称
+  code        String    @unique // 编号
+  species     String    // 物种
+  gene        String?   // 基因
+  gender      String    // 性别
+  birthDate   DateTime  // 出生日期
+  source      String    // 来源
+  price       Float?    // 价格
+  length      Float?    // 体长
+  weight      Float?    // 体重
+  color       String?   // 颜色
+  pattern     String?   // 花纹特征
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // 关联
+  feedings    Feeding[]
+  weightLogs  WeightLog[]
+  sheds       Shed[]
+  breedings   Breeding[]
+}
+
+// 喂食记录
+model Feeding {
+  id          Int       @id @default(autoincrement())
+  date        DateTime  // 喂食日期
+  foodType    String    // 食物类型
+  foodWeight  Float     // 食物重量
+  snakeWeight Float     // 蛇的体重
+  notes       String?   // 备注
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // 关联
+  snake       Snake     @relation(fields: [snakeId], references: [id])
+  snakeId     Int
+}
+
+// 体重记录
+model WeightLog {
+  id          Int       @id @default(autoincrement())
+  date        DateTime  // 记录日期
+  weight      Float     // 体重
+  notes       String?   // 备注
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // 关联
+  snake       Snake     @relation(fields: [snakeId], references: [id])
+  snakeId     Int
+}
+
+// 蜕皮记录
+model Shed {
+  id          Int       @id @default(autoincrement())
+  date        DateTime  // 蜕皮日期
+  completeness String   // 蜕皮完整度
+  notes       String?   // 备注
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // 关联
+  snake       Snake     @relation(fields: [snakeId], references: [id])
+  snakeId     Int
+}
+
+// 繁殖记录
+model Breeding {
+  id          Int       @id @default(autoincrement())
+  date        DateTime  // 配种日期
+  partnerId   Int       // 配种对象ID
+  result      String?   // 配种结果
+  notes       String?   // 备注
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // 关联
+  snake       Snake     @relation(fields: [snakeId], references: [id])
+  snakeId     Int
+} 
