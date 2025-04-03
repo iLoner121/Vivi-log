@@ -27,6 +27,15 @@ const SnakeList: React.FC<SnakeListProps> = ({
       render: (_, __, index) => index + 1,
     },
     {
+      title: '编号',
+      dataIndex: 'code',
+      width: 100,
+      render: (code: string) => {
+        console.log('Snake code:', code);
+        return code || '-';
+      },
+    },
+    {
       title: '昵称',
       dataIndex: 'name',
       key: 'name',

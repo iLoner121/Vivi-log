@@ -46,17 +46,25 @@ export const useSnakeStore = create<SnakeState>((set, get) => ({
     set({ loading: true, error: null })
     try {
       const now = new Date().toISOString()
+      
+      // 确保不会覆盖 code 字段
+      const { code, ...restData } = snakeData as any;
+      
       const newSnake = snakeStorage.create({
-        ...snakeData,
+        ...restData,
         birthDate: snakeData.birthDate,
         createdAt: now,
         updatedAt: now,
       })
+      
+      console.log('Added new snake:', newSnake);
+      
       set(state => ({ 
         snakes: [...state.snakes, newSnake],
         loading: false 
       }))
     } catch (error) {
+      console.error('添加失败:', error);
       set({ error: '添加失败', loading: false })
     }
   },

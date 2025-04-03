@@ -23,8 +23,9 @@ const SnakeForm: React.FC<SnakeFormProps> = ({
   React.useEffect(() => {
     if (initialValues) {
       try {
+        const { code, ...restValues } = initialValues;
         const formattedValues = {
-          ...initialValues,
+          ...restValues,
           birthDate: initialValues.birthDate ? dayjs(initialValues.birthDate) : null,
         };
         form.setFieldsValue(formattedValues);

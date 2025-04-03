@@ -94,11 +94,16 @@ class SnakeStorageService extends StorageService<Snake> {
   create(item: Omit<Snake, 'id'>): Snake {
     const items = this.getAll();
     const newCode = this.generateSnakeCode(items);
+    console.log('Generated new code:', newCode);
+    
+    // 确保 code 字段被正确设置
     const newItem = {
       ...item,
       id: this.generateId(items),
       code: newCode,
     } as Snake;
+    
+    console.log('Created new snake:', newItem);
     items.push(newItem);
     this.saveAll(items);
     return newItem;
@@ -124,7 +129,7 @@ class SnakeStorageService extends StorageService<Snake> {
     
     // 提取所有编号中的数字部分
     const codes = items.map(item => {
-      const match = item.code.match(/S(\d+)/);
+      const match = item.code?.match(/S(\d+)/);
       return match ? parseInt(match[1], 10) : 0;
     });
     

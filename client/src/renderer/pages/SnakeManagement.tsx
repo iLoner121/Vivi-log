@@ -56,8 +56,11 @@ const SnakeManagement: React.FC = () => {
         }
       }
 
+      // 确保不会包含 code 字段
+      const { code, ...restValues } = values as any;
+      
       const snakeData = {
-        ...values,
+        ...restValues,
         birthDate,
       };
 
