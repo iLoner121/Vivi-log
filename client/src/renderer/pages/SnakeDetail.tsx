@@ -83,7 +83,6 @@ const SnakeDetail: React.FC = () => {
 
       <Card title="爬宠详情" className="mb-6">
         <Descriptions column={2}>
-          <Descriptions.Item label="编号">{snake.code}</Descriptions.Item>
           <Descriptions.Item label="昵称">{snake.name}</Descriptions.Item>
           <Descriptions.Item label="物种">{snake.species}</Descriptions.Item>
           <Descriptions.Item label="基因">{snake.gene || '-'}</Descriptions.Item>

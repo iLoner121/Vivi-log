@@ -21,11 +21,10 @@ const SnakeList: React.FC<SnakeListProps> = ({
 }) => {
   const columns: ColumnsType<Snake> = [
     {
-      title: '编号',
-      dataIndex: 'code',
-      key: 'code',
-      width: 120,
-      render: (code: string) => code || '-',
+      title: '序号',
+      key: 'index',
+      width: 80,
+      render: (_, __, index) => index + 1,
     },
     {
       title: '昵称',
