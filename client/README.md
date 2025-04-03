@@ -2,12 +2,11 @@
 
 ## 项目概述
 
-Vivi-log 是一个基于 Electron + React 的桌面应用，用于管理蛇类爬宠的日常饲养信息。本项目使用 TypeScript 作为开发语言，采用现代化的前端技术栈和工具链。
+Vivi-log 是一个基于 React 的爬宠管理应用，用于管理蛇类爬宠的日常饲养信息。本项目使用 TypeScript 作为开发语言，采用现代化的前端技术栈和工具链。
 
 ## 技术栈
 
 - **核心框架**
-  - Electron v28.x - 跨平台桌面应用框架
   - React v19.x - 用户界面框架
   - TypeScript v5.x - 类型安全的 JavaScript 超集
   - Vite v6.x - 现代化前端构建工具
@@ -21,20 +20,34 @@ Vivi-log 是一个基于 Electron + React 的桌面应用，用于管理蛇类�
   - ECharts v5.x - 数据可视化库
 
 - **数据持久化**
-  - Prisma v6.x - 数据库 ORM
-  - SQLite - 本地数据库
+  - localStorage - 本地数据存储
+
+## 项目架构
+
+```
+client/
+├── src/
+│   ├── components/   # React 组件
+│   │   └── snake/    # 爬宠相关组件
+│   ├── pages/        # 页面组件
+│   │   ├── SnakeManagement.tsx  # 爬宠管理页面
+│   │   ├── SnakeDetail.tsx      # 爬宠详情页面
+│   │   └── Settings.tsx         # 设置页面
+│   ├── services/     # 服务层
+│   │   ├── storage.ts           # 数据存储服务
+│   │   └── dataManager.ts       # 数据管理服务
+│   ├── stores/       # 状态管理
+│   │   └── snakeStore.ts        # 爬宠状态管理
+│   └── types/        # 类型定义
+│       └── snake.ts  # 爬宠相关类型
+└── 配置文件
+```
 
 ## 开发环境搭建
 
 ### 1. 环境准备
 - Node.js v20.x
 - pnpm v10.x
-- 如果在 macOS 上遇到 Electron 安装问题，可以尝试：
-  ```bash
-  # 设置 Electron 镜像
-  export ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/"
-  export ELECTRON_CUSTOM_DIR="{{ version }}"
-  ```
 
 ### 2. 安装依赖
 ```bash
@@ -43,76 +56,19 @@ cd client
 
 # 安装依赖
 pnpm install
-
-# 如果 Electron 安装失败，可以尝试：
-npm install electron@28.1.0 --save-dev --force
 ```
 
 ### 3. 启动开发服务器
 ```bash
-# 构建 Electron 主进程
-pnpm build:electron
-
-# 启动开发服务器（包含 Electron）
-pnpm electron-dev
+# 启动开发服务器
+pnpm dev
 ```
 
 ### 4. 构建应用
 ```bash
+# 构建生产版本
 pnpm build
 ```
-
-## 开发模式特性
-
-- 支持热重载
-- 自动打开开发者工具
-- SQLite 数据持久化
-- TypeScript 类型检查
-- Electron 原生功能支持
-
-## 项目结构
-
-```
-client/
-├── electron/                # Electron 主进程相关
-│   └── main.ts             # 主进程入口文件
-├── prisma/                 # Prisma ORM 相关
-│   └── schema.prisma       # 数据库模型定义
-├── src/
-│   ├── main/              # Electron 主进程代码
-│   │   ├── database/      # 数据库相关
-│   │   ├── ipc/          # IPC 通信
-│   │   └── services/     # 主进程服务
-│   ├── renderer/         # 渲染进程代码
-│   │   ├── components/   # React 组件
-│   │   ├── pages/        # 页面组件
-│   │   ├── hooks/        # 自定义 Hooks
-│   │   ├── stores/       # 状态管理
-│   │   ├── services/     # API 服务
-│   │   └── utils/        # 工具函数
-│   └── shared/           # 主进程与渲染进程共享代码
-│       └── types/        # 类型定义
-└── 配置文件
-```
-
-## 功能开发
-
-### 数据库操作
-- 使用 Prisma 进行数据库操作
-- 通过 IPC 在渲染进程中调用数据库服务
-- 支持数据迁移和备份
-
-### 系统集成
-- 支持系统通知
-- 文件系统访问
-- 系统托盘集成
-- 自动更新
-
-### 开发注意事项
-1. 主进程代码使用 CommonJS 语法
-2. 渲染进程代码使用 ES Modules
-3. 数据库操作应在主进程中进行
-4. 使用 IPC 进行进程间通信
 
 ## 核心功能模块
 
@@ -124,16 +80,22 @@ client/
 
 ### 2. 数据存储实现
 
-- **生产环境**：使用 SQLite 数据库（通过 Prisma ORM）
-- **开发环境**：支持两种模式
-  - Electron 环境：使用 SQLite 数据库
-  - 纯浏览器环境：使用 localStorage 持久化存储（自动降级）
-- **IPC 通信**：渲染进程通过 IPC 与主进程数据库服务交互
+- **存储方式**：使用 localStorage 持久化存储
+- **数据管理**：
+  - 数据清理：一键清理所有系统数据
+  - 数据导出：导出为 JSON 文件
+  - 数据导入：从 JSON 文件导入数据
+  - 自动编号：自动生成爬宠编号（S001, S002, ...）
 
 ### 3. 路由系统
 
 - 基于 React Router 实现
-- 主要路由：首页、爬宠管理、爬宠详情
+- 主要路由：
+  - `/` - 首页
+  - `/snakes` - 爬宠管理
+  - `/snakes/:id` - 爬宠详情
+  - `/statistics` - 统计分析
+  - `/settings` - 设置
 
 ## 开发规范
 
@@ -155,17 +117,31 @@ client/
 ### 已完成功能
 - [x] 项目基础架构搭建
 - [x] 爬宠基础信息管理
-- [x] 数据持久化实现（SQLite + localStorage 降级）
+- [x] 数据持久化实现（localStorage）
+- [x] 数据管理功能（清理、导入导出）
+- [x] 自动编号系统
 
 ### 待完成功能
 - [ ] 爬宠详情页面完善
 - [ ] 图片上传功能
-- [ ] 数据导入导出
 - [ ] 数据可视化
+- [ ] 统计分析功能
+- [ ] 喂食记录管理
+- [ ] 蜕皮记录管理
+- [ ] 繁殖记录管理
 
 ## 最近更新
 
-- 添加了 localStorage 数据持久化降级方案
-  - 在纯浏览器环境中自动使用 localStorage 存储数据
-  - 确保开发环境中数据在页面刷新后仍然保留
-  - 实现了优雅降级，当 Electron IPC 可用时自动使用数据库
+- 添加了数据管理功能
+  - 支持一键清理所有系统数据
+  - 支持导出数据为 JSON 文件
+  - 支持从 JSON 文件导入数据
+  - 优化了数据存储结构
+- 实现了设置页面
+  - 提供数据管理界面
+  - 支持数据导入导出操作
+  - 提供数据清理功能
+- 优化了项目结构
+  - 调整了服务文件的位置
+  - 完善了类型定义
+  - 改进了代码组织
