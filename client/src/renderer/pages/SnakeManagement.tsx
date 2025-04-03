@@ -4,31 +4,19 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import SnakeList from '../components/snake/SnakeList';
 import SnakeForm from '../components/snake/SnakeForm';
-import { useSnakeStore } from '../stores/snakeStore';
-import { snakeApi } from '../services/api';
+import { useSnakeStore } from '../../stores/snakeStore';
 import { Snake, SnakeFormData } from '../../shared/types/snake';
+import dayjs from 'dayjs';
 
 const SnakeManagement: React.FC = () => {
   const navigate = useNavigate();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingSnake, setEditingSnake] = useState<Snake | null>(null);
-  const { snakes, loading, addSnake, updateSnake, deleteSnake, setLoading, setSnakes } = useSnakeStore();
+  const { snakes, loading, fetchSnakes, addSnake, updateSnake, deleteSnake } = useSnakeStore();
 
   useEffect(() => {
-    loadSnakes();
+    fetchSnakes();
   }, []);
-
-  const loadSnakes = async () => {
-    try {
-      setLoading(true);
-      const data = await snakeApi.getAll();
-      setSnakes(data);
-    } catch (error) {
-      message.error('加载爬宠列表失败');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleAdd = () => {
     setEditingSnake(null);
@@ -42,14 +30,10 @@ const SnakeManagement: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      setLoading(true);
-      await snakeApi.delete(id);
-      deleteSnake(id);
+      await deleteSnake(id);
       message.success('删除成功');
     } catch (error) {
       message.error('删除失败');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -60,31 +44,38 @@ const SnakeManagement: React.FC = () => {
   const handleSubmit = async (values: SnakeFormData) => {
     try {
       console.log('正在提交表单, 数据:', values);
-      setLoading(true);
-      const snakeData: Snake = {
+      
+      let birthDate = '';
+      if (values.birthDate) {
+        try {
+          birthDate = dayjs(values.birthDate).format('YYYY-01-01');
+        } catch (error) {
+          console.error('日期格式化失败:', error);
+          message.error('日期格式错误');
+          return;
+        }
+      }
+
+      const snakeData = {
         ...values,
-        birthDate: new Date(values.birthDate),
+        birthDate,
       };
 
       if (editingSnake?.id) {
         console.log('正在更新爬宠, ID:', editingSnake.id);
-        const updated = await snakeApi.update(editingSnake.id, snakeData);
-        console.log('更新爬宠成功:', updated);
-        updateSnake(updated);
+        await updateSnake(editingSnake.id, snakeData);
         message.success('更新成功');
       } else {
         console.log('正在创建爬宠');
-        const created = await snakeApi.create(snakeData);
-        console.log('创建爬宠成功:', created);
-        addSnake(created);
+        await addSnake(snakeData);
         message.success('创建成功');
       }
       setIsModalVisible(false);
+      // 重新获取列表以刷新数据
+      fetchSnakes();
     } catch (error) {
       console.error('操作失败:', error);
       message.error('操作失败');
-    } finally {
-      setLoading(false);
     }
   };
 

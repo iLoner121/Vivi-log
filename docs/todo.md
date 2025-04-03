@@ -1,175 +1,197 @@
 # TODO 清单
 
-## SQLite 存储实现
+## 1. 状态管理实现
 
-### 1. 数据库初始化
-- [ ] 创建数据库客户端
+### 1.1 基础 Store 实现
+- [x] 创建数据存储服务
   ```typescript
-  // src/main/database/client.ts
-  import { PrismaClient } from '@prisma/client'
-  export const prisma = new PrismaClient()
-  ```
-- [ ] 在主进程中初始化数据库连接
-  ```typescript
-  // electron/main.ts
-  const { app, BrowserWindow } = require('electron')
-  const { prisma } = require('./src/main/database/client')
-  
-  app.whenReady().then(async () => {
-    // 初始化数据库连接
-    await prisma.$connect()
-    // ... 其他初始化代码
-  })
-  ```
-
-### 2. 数据库服务层
-- [ ] 实现爬宠服务
-  ```typescript
-  // src/main/services/snakeService.ts
-  import { prisma } from '../database/client'
-  
-  export const snakeService = {
-    findAll: () => prisma.snake.findMany(),
-    findById: (id: number) => prisma.snake.findUnique({ where: { id } }),
-    create: (data: CreateSnakeDto) => prisma.snake.create({ data }),
-    update: (id: number, data: UpdateSnakeDto) => 
-      prisma.snake.update({ where: { id }, data }),
-    delete: (id: number) => prisma.snake.delete({ where: { id } }),
+  // src/services/storage.ts
+  class StorageService<T> {
+    // ... 已实现
   }
   ```
-- [ ] 实现喂食记录服务
+- [x] 实现蛇类管理 Store
   ```typescript
-  // src/main/services/feedingService.ts
-  import { prisma } from '../database/client'
-  
-  export const feedingService = {
-    findBySnakeId: (snakeId: number) => 
-      prisma.feeding.findMany({ where: { snakeId } }),
-    create: (data: CreateFeedingDto) => 
-      prisma.feeding.create({ data }),
-    // ... 其他方法
-  }
-  ```
-- [ ] 实现体重记录服务
-- [ ] 实现蜕皮记录服务
-- [ ] 实现繁殖记录服务
-
-### 3. IPC 通信层
-- [ ] 创建 IPC 处理器
-  ```typescript
-  // src/main/ipc/snakeHandler.ts
-  import { ipcMain } from 'electron'
-  import { snakeService } from '../services/snakeService'
-  
-  export function setupSnakeHandlers() {
-    ipcMain.handle('snake:findAll', () => snakeService.findAll())
-    ipcMain.handle('snake:findById', (_, id) => snakeService.findById(id))
-    ipcMain.handle('snake:create', (_, data) => snakeService.create(data))
-    // ... 其他处理器
-  }
-  ```
-- [ ] 在主进程中注册 IPC 处理器
-  ```typescript
-  // electron/main.ts
-  const { setupSnakeHandlers } = require('./src/main/ipc/snakeHandler')
-  
-  app.whenReady().then(async () => {
-    await prisma.$connect()
-    setupSnakeHandlers()
-    // ... 其他初始化代码
-  })
-  ```
-
-### 4. 渲染进程集成
-- [ ] 创建 API 服务
-  ```typescript
-  // src/renderer/services/snakeApi.ts
-  import { ipcRenderer } from 'electron'
-  
-  export const snakeApi = {
-    findAll: () => ipcRenderer.invoke('snake:findAll'),
-    findById: (id: number) => ipcRenderer.invoke('snake:findById', id),
-    create: (data: CreateSnakeDto) => 
-      ipcRenderer.invoke('snake:create', data),
-    // ... 其他方法
-  }
-  ```
-- [ ] 更新状态管理
-  ```typescript
-  // src/renderer/stores/snakeStore.ts
-  import { create } from 'zustand'
-  import { snakeApi } from '../services/snakeApi'
-  
+  // src/stores/snakeStore.ts
   export const useSnakeStore = create<SnakeState>((set, get) => ({
-    // ... 现有状态
-    loadSnakes: async () => {
-      set({ loading: true })
-      try {
-        const snakes = await snakeApi.findAll()
-        set({ snakes })
-      } catch (error) {
-        console.error('Failed to load snakes:', error)
-      } finally {
-        set({ loading: false })
-      }
-    },
-    // ... 其他方法
+    // ... 已实现
   }))
   ```
 
-### 5. 数据迁移
-- [ ] 创建初始迁移
-  ```bash
-  pnpm prisma migrate dev --name init
-  ```
-- [ ] 添加数据种子
+### 1.2 待实现的 Store
+- [ ] 实现喂食记录 Store
   ```typescript
-  // prisma/seed.ts
-  import { PrismaClient } from '@prisma/client'
-  
-  const prisma = new PrismaClient()
-  
-  async function main() {
-    // 添加测试数据
+  // src/stores/feedingStore.ts
+  interface FeedingState {
+    feedings: Feeding[]
+    loading: boolean
+    error: string | null
+    selectedFeeding: Feeding | null
+    
+    fetchFeedings: () => Promise<void>
+    getFeedingsBySnakeId: (snakeId: number) => Feeding[]
+    addFeeding: (feeding: Omit<Feeding, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>
+    updateFeeding: (id: number, updates: Partial<Feeding>) => Promise<void>
+    deleteFeeding: (id: number) => Promise<void>
   }
-  
-  main()
-    .catch((e) => {
-      console.error(e)
-      process.exit(1)
-    })
-    .finally(async () => {
-      await prisma.$disconnect()
-    })
   ```
 
-### 6. 错误处理
-- [ ] 实现全局错误处理中间件
-- [ ] 添加数据库错误处理
-- [ ] 实现重试机制
+- [ ] 实现蜕皮记录 Store
+  ```typescript
+  // src/stores/sheddingStore.ts
+  interface SheddingState {
+    sheddings: Shedding[]
+    loading: boolean
+    error: string | null
+    selectedShedding: Shedding | null
+    
+    fetchSheddings: () => Promise<void>
+    getSheddingsBySnakeId: (snakeId: number) => Shedding[]
+    addShedding: (shedding: Omit<Shedding, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>
+    updateShedding: (id: number, updates: Partial<Shedding>) => Promise<void>
+    deleteShedding: (id: number) => Promise<void>
+  }
+  ```
 
-### 7. 性能优化
-- [ ] 实现数据缓存
-- [ ] 添加批量操作支持
-- [ ] 优化查询性能
+- [ ] 实现繁殖记录 Store
+  ```typescript
+  // src/stores/breedingStore.ts
+  interface BreedingState {
+    breedings: Breeding[]
+    loading: boolean
+    error: string | null
+    selectedBreeding: Breeding | null
+    
+    fetchBreedings: () => Promise<void>
+    getBreedingsBySnakeId: (snakeId: number) => Breeding[]
+    addBreeding: (breeding: Omit<Breeding, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>
+    updateBreeding: (id: number, updates: Partial<Breeding>) => Promise<void>
+    deleteBreeding: (id: number) => Promise<void>
+  }
+  ```
 
-### 8. 测试
-- [ ] 添加数据库服务单元测试
-- [ ] 添加 IPC 通信测试
-- [ ] 添加集成测试
+### 1.3 Store 功能增强
+- [ ] 实现数据导出功能
+  ```typescript
+  // src/services/exportService.ts
+  export const exportService = {
+    exportToExcel: (data: any[], type: string) => {
+      // 实现 Excel 导出
+    },
+    exportToJson: (data: any[], type: string) => {
+      // 实现 JSON 导出
+    }
+  }
+  ```
 
-## 注意事项
-1. 确保在应用退出时正确关闭数据库连接
-2. 实现数据备份机制
-3. 添加数据库迁移回滚支持
-4. 考虑添加数据库版本管理
-5. 实现数据导入导出功能
+- [ ] 实现数据导入功能
+  ```typescript
+  // src/services/importService.ts
+  export const importService = {
+    importFromExcel: (file: File) => {
+      // 实现 Excel 导入
+    },
+    importFromJson: (file: File) => {
+      // 实现 JSON 导入
+    }
+  }
+  ```
+
+- [ ] 实现数据备份功能
+  ```typescript
+  // src/services/backupService.ts
+  export const backupService = {
+    createBackup: () => {
+      // 实现数据备份
+    },
+    restoreBackup: (backup: string) => {
+      // 实现数据恢复
+    }
+  }
+  ```
+
+## 2. UI 组件开发
+
+### 2.1 基础组件
+- [ ] 实现蛇类列表组件
+- [ ] 实现蛇类详情组件
+- [ ] 实现蛇类表单组件
+- [ ] 实现喂食记录组件
+- [ ] 实现蜕皮记录组件
+- [ ] 实现繁殖记录组件
+
+### 2.2 数据可视化组件
+- [ ] 实现体重变化图表
+- [ ] 实现喂食频率图表
+- [ ] 实现蜕皮周期图表
+- [ ] 实现繁殖成功率图表
+
+### 2.3 功能组件
+- [ ] 实现数据导入导出组件
+- [ ] 实现数据备份恢复组件
+- [ ] 实现提醒设置组件
+
+## 3. 页面开发
+
+### 3.1 主要页面
+- [ ] 实现首页
+- [ ] 实现蛇类管理页面
+- [ ] 实现喂食记录页面
+- [ ] 实现蜕皮记录页面
+- [ ] 实现繁殖记录页面
+- [ ] 实现数据统计页面
+- [ ] 实现设置页面
+
+### 3.2 功能页面
+- [ ] 实现数据导入导出页面
+- [ ] 实现数据备份恢复页面
+- [ ] 实现提醒设置页面
+
+## 4. 工具函数开发
+
+### 4.1 数据处理
+- [ ] 实现日期处理函数
+- [ ] 实现数据格式化函数
+- [ ] 实现数据验证函数
+
+### 4.2 业务逻辑
+- [ ] 实现喂食建议计算
+- [ ] 实现体重变化分析
+- [ ] 实现蜕皮周期分析
+- [ ] 实现繁殖成功率分析
+
+## 5. 测试
+
+### 5.1 单元测试
+- [ ] 测试 Store 功能
+- [ ] 测试工具函数
+- [ ] 测试组件渲染
+- [ ] 测试用户交互
+
+### 5.2 集成测试
+- [ ] 测试页面流程
+- [ ] 测试数据流转
+- [ ] 测试状态管理
+
+## 6. 文档
+
+### 6.1 开发文档
+- [ ] 编写组件文档
+- [ ] 编写 Store 文档
+- [ ] 编写工具函数文档
+- [ ] 编写测试文档
+
+### 6.2 用户文档
+- [ ] 编写用户指南
+- [ ] 编写功能说明
+- [ ] 编写常见问题
+- [ ] 编写故障排除指南
 
 ## 优先级
-1. 数据库初始化和基础服务层
-2. IPC 通信层
-3. 渲染进程集成
-4. 数据迁移
-5. 错误处理
-6. 性能优化
-7. 测试 
+1. 完成所有 Store 实现
+2. 开发基础 UI 组件
+3. 实现主要页面
+4. 开发数据可视化
+5. 实现数据导入导出
+6. 添加测试
+7. 完善文档 

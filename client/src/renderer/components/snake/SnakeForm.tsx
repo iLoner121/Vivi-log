@@ -22,10 +22,15 @@ const SnakeForm: React.FC<SnakeFormProps> = ({
 
   React.useEffect(() => {
     if (initialValues) {
-      form.setFieldsValue({
-        ...initialValues,
-        birthDate: dayjs(initialValues.birthDate),
-      });
+      try {
+        const formattedValues = {
+          ...initialValues,
+          birthDate: initialValues.birthDate ? dayjs(initialValues.birthDate) : null,
+        };
+        form.setFieldsValue(formattedValues);
+      } catch (error) {
+        console.error('设置表单值失败:', error);
+      }
     }
   }, [initialValues, form]);
 
@@ -34,20 +39,11 @@ const SnakeForm: React.FC<SnakeFormProps> = ({
       form={form}
       layout="vertical"
       onFinish={handleSubmit}
-      initialValues={initialValues}
     >
       <Form.Item
         name="name"
         label="昵称"
         rules={[{ required: true, message: '请输入昵称' }]}
-      >
-        <Input />
-      </Form.Item>
-
-      <Form.Item
-        name="code"
-        label="编号"
-        rules={[{ required: true, message: '请输入编号' }]}
       >
         <Input />
       </Form.Item>
@@ -78,17 +74,13 @@ const SnakeForm: React.FC<SnakeFormProps> = ({
 
       <Form.Item
         name="birthDate"
-        label="出生日期"
-        rules={[{ required: true, message: '请选择出生日期' }]}
+        label="出生年份"
+        rules={[{ required: true, message: '请选择出生年份' }]}
       >
-        <DatePicker style={{ width: '100%' }} />
+        <DatePicker picker="year" style={{ width: '100%' }} />
       </Form.Item>
 
-      <Form.Item
-        name="source"
-        label="来源"
-        rules={[{ required: true, message: '请输入来源' }]}
-      >
+      <Form.Item name="source" label="来源">
         <Input />
       </Form.Item>
 
@@ -109,16 +101,16 @@ const SnakeForm: React.FC<SnakeFormProps> = ({
       </Form.Item>
 
       <Form.Item name="pattern" label="花纹特征">
-        <Input.TextArea />
+        <Input />
       </Form.Item>
 
       <Form.Item>
-        <div className="flex justify-end gap-4">
-          <Button onClick={onCancel}>取消</Button>
-          <Button type="primary" htmlType="submit">
-            保存
-          </Button>
-        </div>
+        <Button type="primary" htmlType="submit">
+          保存
+        </Button>
+        <Button onClick={onCancel} style={{ marginLeft: 8 }}>
+          取消
+        </Button>
       </Form.Item>
     </Form>
   );

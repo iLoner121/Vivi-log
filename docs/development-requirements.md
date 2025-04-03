@@ -5,13 +5,11 @@
 ## 1. 技术栈规范
 
 ### 1.1 核心框架
-- **Electron**: 28.x
 - **React**: 18.x
 - **TypeScript**: 5.x
-- **SQLite**: 3.x
+- **Vite**: 6.x
 
 ### 1.2 开发工具链
-- **构建工具**: Vite
 - **包管理器**: pnpm
 - **代码规范**: ESLint + Prettier
 - **版本控制**: Git
@@ -22,7 +20,7 @@
 - **状态管理**: Zustand
 - **数据可视化**: ECharts
 - **样式解决方案**: TailwindCSS
-- **ORM**: Prisma
+- **数据持久化**: localStorage
 
 ## 2. 开发规范
 
@@ -37,21 +35,15 @@
 ```
 vivi-log/
 ├── src/
-│   ├── main/                 # Electron 主进程
-│   │   ├── database/         # 数据库相关
-│   │   ├── ipc/             # IPC 通信
-│   │   └── services/        # 主进程服务
-│   ├── renderer/            # 渲染进程
-│   │   ├── components/      # 组件
-│   │   ├── pages/          # 页面
-│   │   ├── hooks/          # 自定义 Hooks
-│   │   ├── stores/         # 状态管理
-│   │   ├── utils/          # 工具函数
-│   │   └── types/          # 类型定义
-│   └── shared/             # 共享代码
-├── electron/               # Electron 配置
-├── public/                # 静态资源
-└── scripts/              # 构建脚本
+│   ├── components/      # 组件
+│   ├── pages/          # 页面
+│   ├── hooks/          # 自定义 Hooks
+│   ├── stores/         # 状态管理
+│   ├── services/       # 服务层
+│   ├── utils/          # 工具函数
+│   └── types/          # 类型定义
+├── public/            # 静态资源
+└── scripts/          # 构建脚本
 ```
 
 ### 2.3 组件开发规范
@@ -71,15 +63,27 @@ vivi-log/
 ### 2.4 状态管理规范
 - 使用 Zustand 进行状态管理
 - 按功能模块拆分 store
-- 避免状态冗余
+- Store 文件结构：
+  ```
+  stores/
+  ├── snakeStore.ts
+  ├── feedingStore.ts
+  ├── sheddingStore.ts
+  └── breedingStore.ts
+  ```
+- 每个 store 包含：
+  - 状态定义
+  - 操作方法
+  - 异步操作处理
+  - 错误处理
 - 使用 selector 优化性能
+- 避免状态冗余
 
-### 2.5 数据库操作规范
-- 使用 Prisma 进行数据库操作
-- 定义清晰的数据库模型
-- 实现数据验证
-- 处理数据库错误
-- 定期备份数据
+### 2.5 数据持久化规范
+- 使用 localStorage 进行数据持久化
+- 实现统一的数据存储服务
+- 处理存储限制和错误
+- 实现数据备份和恢复功能
 
 ### 2.6 错误处理规范
 - 实现全局错误处理
@@ -92,7 +96,7 @@ vivi-log/
 - 优化图片资源
 - 使用 React.memo 优化渲染
 - 实现数据缓存策略
-- 优化数据库查询
+- 优化状态更新
 
 ## 3. 开发流程
 
@@ -161,9 +165,9 @@ vivi-log/
 - 版本号管理
 
 ### 6.2 更新机制
-- 自动更新支持
+- 版本更新策略
 - 更新日志
-- 回滚机制
+- 兼容性处理
 
 ## 7. 维护要求
 

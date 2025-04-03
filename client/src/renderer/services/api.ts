@@ -3,6 +3,12 @@ import { Snake } from '../../shared/types/snake';
 // 开发环境检测
 const isDev = process.env.NODE_ENV === 'development';
 
+// 生成蛇编号：S + 三位数字（从S001开始）
+const generateSnakeCode = (lastId: number): string => {
+  const numStr = String(lastId).padStart(3, '0');
+  return `S${numStr}`;
+};
+
 // 模拟数据持久化存储
 class LocalStorageDB {
   private storageKey = 'vivi-log-snakes';
@@ -19,9 +25,9 @@ class LocalStorageDB {
       if (data) {
         this.snakes = JSON.parse(data).map((s: any) => ({
           ...s,
-          birthDate: new Date(s.birthDate),
-          createdAt: s.createdAt ? new Date(s.createdAt) : undefined,
-          updatedAt: s.updatedAt ? new Date(s.updatedAt) : undefined
+          birthDate: s.birthDate,
+          createdAt: s.createdAt,
+          updatedAt: s.updatedAt
         }));
         
         // 找出最大ID，用于自增ID计算
@@ -51,26 +57,32 @@ class LocalStorageDB {
     return {...snake};
   }
 
-  create(data: Omit<Snake, 'id' | 'createdAt' | 'updatedAt'>): Snake {
+  create(data: Omit<Snake, 'id' | 'code' | 'createdAt' | 'updatedAt'>): Snake {
+    const now = new Date().toISOString();
+    const newId = this.nextId++;
     const newSnake: Snake = {
       ...data,
-      id: this.nextId++,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      id: newId,
+      code: generateSnakeCode(newId),
+      createdAt: now,
+      updatedAt: now
     };
     this.snakes.push(newSnake);
     this.saveToStorage();
     return {...newSnake};
   }
 
-  update(id: number, data: Partial<Snake>): Snake {
+  update(id: number, data: Partial<Omit<Snake, 'code'>>): Snake {
     const index = this.snakes.findIndex(s => s.id === id);
     if (index === -1) throw new Error('爬宠不存在');
     
+    const now = new Date().toISOString();
     this.snakes[index] = {
       ...this.snakes[index],
       ...data,
-      updatedAt: new Date()
+      // 确保编号不被修改
+      code: this.snakes[index].code,
+      updatedAt: now
     };
     this.saveToStorage();
     return {...this.snakes[index]};
@@ -124,14 +136,14 @@ export const snakeApi = {
     return window.api!.invoke('snake:getById', id);
   },
 
-  async create(data: Omit<Snake, 'id' | 'createdAt' | 'updatedAt'>): Promise<Snake> {
+  async create(data: Omit<Snake, 'id' | 'code' | 'createdAt' | 'updatedAt'>): Promise<Snake> {
     if (isDev && !checkApi()) {
       return Promise.resolve(localDb.create(data));
     }
     return window.api!.invoke('snake:create', data);
   },
 
-  async update(id: number, data: Partial<Snake>): Promise<Snake> {
+  async update(id: number, data: Partial<Omit<Snake, 'code'>>): Promise<Snake> {
     if (isDev && !checkApi()) {
       return Promise.resolve(localDb.update(id, data));
     }

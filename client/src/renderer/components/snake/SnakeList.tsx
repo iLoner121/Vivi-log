@@ -25,6 +25,7 @@ const SnakeList: React.FC<SnakeListProps> = ({
       dataIndex: 'code',
       key: 'code',
       width: 120,
+      render: (code: string) => code || '-',
     },
     {
       title: '昵称',

@@ -7,15 +7,15 @@ export interface Snake {
   species: string;
   gene?: string;
   gender: Gender;
-  birthDate: Date;
-  source: string;
+  birthDate: string;
+  source?: string;
   price?: number;
   length?: number;
   weight?: number;
   color?: string;
   pattern?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface SnakeFormData extends Omit<Snake, 'birthDate' | 'createdAt' | 'updatedAt'> {
@@ -26,6 +26,6 @@ export interface SnakeFilter {
   searchText?: string;
   species?: string;
   gender?: Gender;
-  startDate?: Date;
-  endDate?: Date;
+  startDate?: string;
+  endDate?: string;
 } 
