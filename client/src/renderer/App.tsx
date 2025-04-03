@@ -9,6 +9,7 @@ import {
 } from '@ant-design/icons';
 import SnakeManagement from './pages/SnakeManagement';
 import SnakeDetail from './pages/SnakeDetail';
+import Settings from './pages/Settings';
 
 const { Header, Sider, Content } = Layout;
 
@@ -45,7 +46,7 @@ const App: React.FC = () => {
               <Route path="/snakes" element={<SnakeManagement />} />
               <Route path="/snakes/:id" element={<SnakeDetail />} />
               <Route path="/statistics" element={<div>统计分析</div>} />
-              <Route path="/settings" element={<div>设置</div>} />
+              <Route path="/settings" element={<Settings />} />
             </Routes>
           </Content>
         </Layout>
