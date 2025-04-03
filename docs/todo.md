@@ -36,20 +36,36 @@
   }
   ```
 
-- [ ] 实现蜕皮记录 Store
+- [ ] 实现成长记录 Store
   ```typescript
-  // src/stores/sheddingStore.ts
-  interface SheddingState {
-    sheddings: Shedding[]
+  // src/stores/growthStore.ts
+  interface GrowthState {
+    // 体重记录
+    weightRecords: WeightRecord[]
+    // 蜕皮记录
+    sheddingRecords: SheddingRecord[]
     loading: boolean
     error: string | null
-    selectedShedding: Shedding | null
+    selectedRecord: WeightRecord | SheddingRecord | null
     
-    fetchSheddings: () => Promise<void>
-    getSheddingsBySnakeId: (snakeId: number) => Shedding[]
-    addShedding: (shedding: Omit<Shedding, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>
-    updateShedding: (id: number, updates: Partial<Shedding>) => Promise<void>
-    deleteShedding: (id: number) => Promise<void>
+    // 体重记录相关方法
+    fetchWeightRecords: () => Promise<void>
+    getWeightRecordsBySnakeId: (snakeId: number) => WeightRecord[]
+    addWeightRecord: (record: Omit<WeightRecord, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>
+    updateWeightRecord: (id: number, updates: Partial<WeightRecord>) => Promise<void>
+    deleteWeightRecord: (id: number) => Promise<void>
+    
+    // 蜕皮记录相关方法
+    fetchSheddingRecords: () => Promise<void>
+    getSheddingRecordsBySnakeId: (snakeId: number) => SheddingRecord[]
+    addSheddingRecord: (record: Omit<SheddingRecord, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>
+    updateSheddingRecord: (id: number, updates: Partial<SheddingRecord>) => Promise<void>
+    deleteSheddingRecord: (id: number) => Promise<void>
+    
+    // 数据分析方法
+    calculateGrowthRate: (snakeId: number) => number
+    predictNextShedding: (snakeId: number) => Date
+    getGrowthChartData: (snakeId: number) => ChartData
   }
   ```
 
@@ -113,17 +129,27 @@
 ## 2. UI 组件开发
 
 ### 2.1 基础组件
-- [ ] 实现蛇类列表组件
-- [ ] 实现蛇类详情组件
-- [ ] 实现蛇类表单组件
+- [x] 实现蛇类列表组件
+- [x] 实现蛇类详情组件
+- [x] 实现蛇类表单组件
 - [ ] 实现喂食记录组件
-- [ ] 实现蜕皮记录组件
+- [ ] 实现成长记录组件
+  - 体重记录表单
+  - 蜕皮记录表单
+  - 成长曲线图表
+  - 蜕皮周期分析
 - [ ] 实现繁殖记录组件
 
 ### 2.2 数据可视化组件
 - [ ] 实现体重变化图表
-- [ ] 实现喂食频率图表
+  - 支持时间范围选择
+  - 显示生长速度趋势
+  - 支持数据点标记
 - [ ] 实现蜕皮周期图表
+  - 显示蜕皮间隔
+  - 预测下次蜕皮时间
+  - 异常情况标记
+- [ ] 实现喂食频率图表
 - [ ] 实现繁殖成功率图表
 
 ### 2.3 功能组件
@@ -134,13 +160,16 @@
 ## 3. 页面开发
 
 ### 3.1 主要页面
-- [ ] 实现首页
-- [ ] 实现蛇类管理页面
+- [x] 实现首页
+- [x] 实现蛇类管理页面
 - [ ] 实现喂食记录页面
-- [ ] 实现蜕皮记录页面
+- [ ] 实现成长记录页面
+  - 体重记录管理
+  - 蜕皮记录管理
+  - 成长数据分析
 - [ ] 实现繁殖记录页面
-- [ ] 实现数据统计页面
-- [ ] 实现设置页面
+- [x] 实现数据统计页面
+- [x] 实现设置页面
 
 ### 3.2 功能页面
 - [ ] 实现数据导入导出页面
@@ -157,7 +186,13 @@
 ### 4.2 业务逻辑
 - [ ] 实现喂食建议计算
 - [ ] 实现体重变化分析
+  - 计算生长速度
+  - 预测成年体重
+  - 异常体重提醒
 - [ ] 实现蜕皮周期分析
+  - 计算蜕皮间隔
+  - 预测下次蜕皮
+  - 异常情况识别
 - [ ] 实现繁殖成功率分析
 
 ## 5. 测试
@@ -188,10 +223,10 @@
 - [ ] 编写故障排除指南
 
 ## 优先级
-1. 完成所有 Store 实现
-2. 开发基础 UI 组件
-3. 实现主要页面
-4. 开发数据可视化
-5. 实现数据导入导出
+1. 完成成长记录功能（体重记录和蜕皮记录）
+2. 实现数据可视化
+3. 开发喂食记录功能
+4. 实现繁殖记录功能
+5. 添加数据导入导出
 6. 添加测试
 7. 完善文档 
