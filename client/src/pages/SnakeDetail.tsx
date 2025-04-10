@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Descriptions, Button, Space, message, Modal } from 'antd';
-import { ArrowLeftOutlined, EditOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, EditOutlined, LineChartOutlined } from '@ant-design/icons';
 import { Snake, SnakeFormData } from '../types';
 import { useSnakeStore } from '../stores/snakeStore';
 import dayjs from 'dayjs';
@@ -67,11 +67,65 @@ const SnakeDetail: React.FC = () => {
   }
 
   return (
-    <div>
-      <Space className="mb-4">
-        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/snakes')}>
-          返回列表
+    <div className="p-4">
+      <div className="mb-4 flex items-center">
+        <Button
+          type="text"
+          icon={<ArrowLeftOutlined />}
+          onClick={() => navigate('/snakes')}
+        >
+          返回
         </Button>
+        <h1 className="text-2xl font-bold ml-4">
+          {snake.name} ({snake.code})
+        </h1>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card>
+          <Descriptions title="基本信息" bordered>
+            <Descriptions.Item label="编号">{snake.code}</Descriptions.Item>
+            <Descriptions.Item label="昵称">{snake.name}</Descriptions.Item>
+            <Descriptions.Item label="物种">{snake.species}</Descriptions.Item>
+            <Descriptions.Item label="基因">{snake.gene || '-'}</Descriptions.Item>
+            <Descriptions.Item label="性别">
+              {snake.gender === 'male' ? '雄性' : snake.gender === 'female' ? '雌性' : '未知'}
+            </Descriptions.Item>
+            <Descriptions.Item label="出生日期">
+              {dayjs(snake.birthDate).format('YYYY-MM-DD')}
+            </Descriptions.Item>
+            <Descriptions.Item label="来源">{snake.source || '-'}</Descriptions.Item>
+            <Descriptions.Item label="价格">{snake.price ? `¥${snake.price}` : '-'}</Descriptions.Item>
+            <Descriptions.Item label="体长">{snake.length ? `${snake.length}cm` : '-'}</Descriptions.Item>
+            <Descriptions.Item label="体重">{snake.weight ? `${snake.weight}g` : '-'}</Descriptions.Item>
+            <Descriptions.Item label="颜色">{snake.color || '-'}</Descriptions.Item>
+            <Descriptions.Item label="花纹特征">{snake.pattern || '-'}</Descriptions.Item>
+            <Descriptions.Item label="创建时间">
+              {dayjs(snake.createdAt).format('YYYY-MM-DD HH:mm:ss')}
+            </Descriptions.Item>
+            <Descriptions.Item label="更新时间">
+              {dayjs(snake.updatedAt).format('YYYY-MM-DD HH:mm:ss')}
+            </Descriptions.Item>
+          </Descriptions>
+        </Card>
+
+        <Card
+          title="成长记录"
+          extra={
+            <Button
+              type="primary"
+              icon={<LineChartOutlined />}
+              onClick={() => navigate(`/snakes/${snake.id}/growth`)}
+            >
+              查看成长记录
+            </Button>
+          }
+        >
+          <p>点击上方按钮查看详细的成长记录</p>
+        </Card>
+      </div>
+
+      <Space className="mb-4 mt-4">
         <Button
           type="primary"
           icon={<EditOutlined />}
@@ -80,38 +134,6 @@ const SnakeDetail: React.FC = () => {
           编辑
         </Button>
       </Space>
-
-      <Card title="爬宠详情" className="mb-6">
-        <Descriptions bordered column={2}>
-          <Descriptions.Item label="编号">
-            {(() => {
-              console.log('Snake detail code:', snake.code);
-              return snake.code || '-';
-            })()}
-          </Descriptions.Item>
-          <Descriptions.Item label="昵称">{snake.name}</Descriptions.Item>
-          <Descriptions.Item label="物种">{snake.species}</Descriptions.Item>
-          <Descriptions.Item label="基因">{snake.gene || '-'}</Descriptions.Item>
-          <Descriptions.Item label="性别">
-            {snake.gender === 'male' ? '雄性' : snake.gender === 'female' ? '雌性' : '未知'}
-          </Descriptions.Item>
-          <Descriptions.Item label="出生年份">
-            {dayjs(snake.birthDate).format('YYYY')}
-          </Descriptions.Item>
-          <Descriptions.Item label="来源">{snake.source || '-'}</Descriptions.Item>
-          <Descriptions.Item label="价格">{snake.price ? `¥${snake.price}` : '-'}</Descriptions.Item>
-          <Descriptions.Item label="体长">{snake.length ? `${snake.length}cm` : '-'}</Descriptions.Item>
-          <Descriptions.Item label="体重">{snake.weight ? `${snake.weight}g` : '-'}</Descriptions.Item>
-          <Descriptions.Item label="颜色">{snake.color || '-'}</Descriptions.Item>
-          <Descriptions.Item label="花纹特征">{snake.pattern || '-'}</Descriptions.Item>
-          <Descriptions.Item label="创建时间">
-            {dayjs(snake.createdAt).format('YYYY-MM-DD HH:mm:ss')}
-          </Descriptions.Item>
-          <Descriptions.Item label="更新时间">
-            {dayjs(snake.updatedAt).format('YYYY-MM-DD HH:mm:ss')}
-          </Descriptions.Item>
-        </Descriptions>
-      </Card>
 
       <Modal
         title="编辑爬宠"
@@ -127,17 +149,17 @@ const SnakeDetail: React.FC = () => {
         />
       </Modal>
 
-      <Card title="喂食记录" className="mb-6">
+      <Card title="喂食记录" className="mt-4">
         {/* TODO: 添加喂食记录列表 */}
         <div>暂无喂食记录</div>
       </Card>
 
-      <Card title="体重记录" className="mb-6">
+      <Card title="体重记录" className="mt-4">
         {/* TODO: 添加体重记录图表 */}
         <div>暂无体重记录</div>
       </Card>
 
-      <Card title="蜕皮记录">
+      <Card title="蜕皮记录" className="mt-4">
         {/* TODO: 添加蜕皮记录列表 */}
         <div>暂无蜕皮记录</div>
       </Card>
