@@ -188,21 +188,6 @@ const SnakeDetail: React.FC = () => {
           onCancel={() => setIsModalVisible(false)}
         />
       </Modal>
-
-      <Card title="喂食记录" className="mt-4">
-        {/* TODO: 添加喂食记录列表 */}
-        <div>暂无喂食记录</div>
-      </Card>
-
-      <Card title="体重记录" className="mt-4">
-        {/* TODO: 添加体重记录图表 */}
-        <div>暂无体重记录</div>
-      </Card>
-
-      <Card title="蜕皮记录" className="mt-4">
-        {/* TODO: 添加蜕皮记录列表 */}
-        <div>暂无蜕皮记录</div>
-      </Card>
     </div>
   );
 };
