@@ -3,7 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Descriptions, Button, Space, message, Modal } from 'antd';
 import { ArrowLeftOutlined, EditOutlined, LineChartOutlined } from '@ant-design/icons';
 import { Snake, SnakeFormData } from '../types';
+import { WeightRecord, SheddingRecord } from '../types/growth';
 import { useSnakeStore } from '../stores/snakeStore';
+import { useGrowthStore } from '../stores/growthStore';
 import dayjs from 'dayjs';
 import SnakeForm from '../components/snake/SnakeForm';
 
@@ -11,6 +13,7 @@ const SnakeDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getSnakeById, fetchSnakes, loading, updateSnake } = useSnakeStore();
+  const { getWeightRecordsBySnakeId, getSheddingRecordsBySnakeId, predictNextShedding } = useGrowthStore();
   const [snake, setSnake] = useState<Snake | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -66,6 +69,18 @@ const SnakeDetail: React.FC = () => {
     return <div>加载中...</div>;
   }
 
+  const weightRecords = getWeightRecordsBySnakeId(snake.id);
+  const sheddingRecords = getSheddingRecordsBySnakeId(snake.id);
+  const nextShedding = predictNextShedding(snake.id);
+
+  const latestWeight = weightRecords.length > 0 
+    ? weightRecords.sort((a: WeightRecord, b: WeightRecord) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
+    : null;
+
+  const latestShedding = sheddingRecords.length > 0
+    ? sheddingRecords.sort((a: SheddingRecord, b: SheddingRecord) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
+    : null;
+
   return (
     <div className="p-4">
       <div className="mb-4 flex items-center">
@@ -115,13 +130,38 @@ const SnakeDetail: React.FC = () => {
             <Button
               type="primary"
               icon={<LineChartOutlined />}
-              onClick={() => navigate(`/snakes/${snake.id}/growth`)}
+              onClick={() => navigate(`/growth/${snake.id}`)}
             >
               查看成长记录
             </Button>
           }
         >
-          <p>点击上方按钮查看详细的成长记录</p>
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-medium">最近体重记录</h3>
+              <p>
+                {latestWeight 
+                  ? `${dayjs(latestWeight.date).format('YYYY-MM-DD')}: ${latestWeight.weight}g`
+                  : '暂无体重记录'}
+              </p>
+            </div>
+            <div>
+              <h3 className="font-medium">最近蜕皮记录</h3>
+              <p>
+                {latestShedding 
+                  ? `${dayjs(latestShedding.date).format('YYYY-MM-DD')}: ${latestShedding.isComplete ? '完整' : '不完整'}`
+                  : '暂无蜕皮记录'}
+              </p>
+            </div>
+            <div>
+              <h3 className="font-medium">预计下次蜕皮</h3>
+              <p>
+                {nextShedding 
+                  ? `${dayjs(nextShedding.predictedDate).format('YYYY-MM-DD')} (置信度: ${(nextShedding.confidence * 100).toFixed(0)}%)`
+                  : '暂无预测数据'}
+              </p>
+            </div>
+          </div>
         </Card>
       </div>
 

@@ -27,6 +27,8 @@ export interface GrowthState {
   calculateGrowthRate: (weights: number[], dates: string[]) => number;
   predictNextShedding: (snakeId: number) => { predictedDate: Date; confidence: number };
   getGrowthChartData: (snakeId: number) => GrowthChartData;
+  getWeightRecordsBySnakeId: (snakeId: number) => WeightRecord[];
+  getSheddingRecordsBySnakeId: (snakeId: number) => SheddingRecord[];
   fetchWeightRecords: () => Promise<void>;
   fetchSheddingRecords: () => Promise<void>;
   addWeightRecord: (record: Omit<WeightRecord, 'id'>) => Promise<void>;
