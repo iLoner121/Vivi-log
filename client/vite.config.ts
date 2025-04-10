@@ -7,15 +7,6 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'index.html'),
-        preload: resolve(__dirname, 'src/main/preload.ts'),
-      },
-      output: {
-        entryFileNames: '[name].js',
-      },
-    },
   },
   resolve: {
     alias: {
@@ -25,8 +16,5 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: false,
-  },
-  define: {
-    'process.env.NODE_ENV': JSON.stringify('development'),
   },
 }) 

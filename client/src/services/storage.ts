@@ -1,5 +1,4 @@
-import { Snake } from '../shared/types/snake';
-import { Feeding, Shedding, Breeding } from '../types';
+import { Snake, Feeding, Shedding, Breeding } from '../types';
 
 // 存储键名常量
 const STORAGE_KEYS = {

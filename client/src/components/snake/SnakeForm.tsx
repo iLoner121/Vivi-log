@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Input, Select, DatePicker, InputNumber, Button } from 'antd';
-import { Snake, SnakeFormData } from '../../../shared/types/snake';
+import { Snake, SnakeFormData } from '../../types';
 import dayjs from 'dayjs';
 
 interface SnakeFormProps {

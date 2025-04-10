@@ -4,8 +4,8 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import SnakeList from '../components/snake/SnakeList';
 import SnakeForm from '../components/snake/SnakeForm';
-import { useSnakeStore } from '../../stores/snakeStore';
-import { Snake, SnakeFormData } from '../../shared/types/snake';
+import { useSnakeStore } from '../stores/snakeStore';
+import { Snake, SnakeFormData } from '../types';
 import dayjs from 'dayjs';
 
 const SnakeManagement: React.FC = () => {

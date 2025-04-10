@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Descriptions, Button, Space, message, Modal } from 'antd';
 import { ArrowLeftOutlined, EditOutlined } from '@ant-design/icons';
-import { Snake, SnakeFormData } from '../../shared/types/snake';
-import { useSnakeStore } from '../../stores/snakeStore';
+import { Snake, SnakeFormData } from '../types';
+import { useSnakeStore } from '../stores/snakeStore';
 import dayjs from 'dayjs';
 import SnakeForm from '../components/snake/SnakeForm';
 
