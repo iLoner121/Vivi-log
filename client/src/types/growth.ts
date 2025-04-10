@@ -35,6 +35,7 @@ export interface GrowthState {
   addSheddingRecord: (record: Omit<SheddingRecord, 'id'>) => Promise<void>;
   updateSheddingRecord: (id: number, updates: Partial<SheddingRecord>) => Promise<void>;
   deleteSheddingRecord: (id: number) => Promise<void>;
+  calculateStd: (values: number[]) => number;
 }
 
 export interface GrowthChartData {

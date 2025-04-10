@@ -10,23 +10,23 @@ const STORAGE_KEY = {
 const weightStorage = new StorageService<WeightRecord>(STORAGE_KEY.WEIGHT_RECORDS);
 const sheddingStorage = new StorageService<SheddingRecord>(STORAGE_KEY.SHEDDING_RECORDS);
 
-// 计算标准差
-const calculateStd = (values: number[]): number => {
-  const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
-  const squareDiffs = values.map(value => {
-    const diff = value - mean;
-    return diff * diff;
-  });
-  const avgSquareDiff = squareDiffs.reduce((sum, val) => sum + val, 0) / values.length;
-  return Math.sqrt(avgSquareDiff);
-};
-
 export const useGrowthStore = create<GrowthState>((set, get) => ({
   weightRecords: [],
   sheddingRecords: [],
   loading: false,
   error: null,
   selectedRecord: null,
+
+  // 计算标准差
+  calculateStd: (values: number[]): number => {
+    const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
+    const squareDiffs = values.map(value => {
+      const diff = value - mean;
+      return diff * diff;
+    });
+    const avgSquareDiff = squareDiffs.reduce((sum, val) => sum + val, 0) / values.length;
+    return Math.sqrt(avgSquareDiff);
+  },
 
   // 获取体重记录
   fetchWeightRecords: async () => {
@@ -165,12 +165,12 @@ export const useGrowthStore = create<GrowthState>((set, get) => ({
       growthRates.push(growthRate);
     }
     
-    return calculateStd(growthRates);
+    return get().calculateStd(growthRates);
   },
 
   // 预测下次蜕皮时间
   predictNextShedding: () => {
-    const { sheddingRecords } = get();
+    const { sheddingRecords, calculateStd } = get();
     if (sheddingRecords.length < 2) {
       return null;
     }
