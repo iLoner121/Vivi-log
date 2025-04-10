@@ -52,7 +52,7 @@ const App: React.FC = () => {
                 <Route path="/" element={<SnakeManagement />} />
                 <Route path="/snakes" element={<SnakeManagement />} />
                 <Route path="/snakes/:id" element={<SnakeDetail />} />
-                <Route path="/snakes/:id/growth" element={<GrowthRecord />} />
+                <Route path="/growth/:id" element={<GrowthRecord />} />
                 <Route path="/statistics" element={<Statistics />} />
                 <Route path="/settings" element={<Settings />} />
               </Routes>

@@ -3,6 +3,7 @@ import { Table, Tag, Space, Button } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { Snake } from '../../../shared/types/snake';
 import dayjs from 'dayjs';
+import { useNavigate } from 'react-router-dom';
 
 interface SnakeListProps {
   data: Snake[];
@@ -19,6 +20,8 @@ const SnakeList: React.FC<SnakeListProps> = ({
   onDelete,
   onView,
 }) => {
+  const navigate = useNavigate();
+
   const columns: ColumnsType<Snake> = [
     {
       title: '序号',
@@ -84,7 +87,7 @@ const SnakeList: React.FC<SnakeListProps> = ({
     {
       title: '操作',
       key: 'action',
-      width: 200,
+      width: 250,
       render: (_, record) => (
         <Space size="middle">
           <Button type="link" onClick={() => onView(record)}>
@@ -92,6 +95,9 @@ const SnakeList: React.FC<SnakeListProps> = ({
           </Button>
           <Button type="link" onClick={() => onEdit(record)}>
             编辑
+          </Button>
+          <Button type="link" onClick={() => navigate(`/growth/${record.id}`)}>
+            成长记录
           </Button>
           <Button type="link" danger onClick={() => onDelete(record.id!)}>
             删除
