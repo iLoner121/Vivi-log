@@ -38,8 +38,11 @@ client/
 │   │   └── dataManager.ts       # 数据管理服务
 │   ├── stores/       # 状态管理
 │   │   └── snakeStore.ts        # 爬宠状态管理
-│   └── types/        # 类型定义
-│       └── snake.ts  # 爬宠相关类型
+│   ├── types/        # 类型定义
+│   │   └── snake.ts  # 爬宠相关类型
+│   ├── App.tsx       # 应用根组件
+│   ├── main.tsx      # 应用入口
+│   └── index.css     # 全局样式
 └── 配置文件
 ```
 
