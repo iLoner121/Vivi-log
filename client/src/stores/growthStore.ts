@@ -165,17 +165,32 @@ export const useGrowthStore = create<GrowthState>((set, get) => ({
       growthRates.push(growthRate);
     }
     
-    return get().calculateStd(growthRates);
+    // 返回平均生长率，而不是标准差
+    return growthRates.reduce((sum, rate) => sum + rate, 0) / growthRates.length;
   },
 
   // 预测下次蜕皮时间
-  predictNextShedding: () => {
+  predictNextShedding: (snakeId: number) => {
     const { sheddingRecords, calculateStd } = get();
-    if (sheddingRecords.length < 2) {
-      return null;
+    const snakeRecords = sheddingRecords.filter(record => record.snakeId === snakeId);
+    
+    if (snakeRecords.length < 1) {
+      // 如果没有蜕皮记录，默认一个月后
+      return {
+        predictedDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        confidence: 0.5
+      };
     }
 
-    const sortedRecords = [...sheddingRecords].sort((a, b) => 
+    if (snakeRecords.length < 2) {
+      // 如果只有一次蜕皮记录，默认一个月后
+      return {
+        predictedDate: new Date(new Date(snakeRecords[0].date).getTime() + 30 * 24 * 60 * 60 * 1000),
+        confidence: 0.5
+      };
+    }
+
+    const sortedRecords = [...snakeRecords].sort((a, b) => 
       new Date(a.date).getTime() - new Date(b.date).getTime()
     );
 
@@ -193,7 +208,7 @@ export const useGrowthStore = create<GrowthState>((set, get) => ({
 
     return {
       predictedDate: nextShedding,
-      confidence: 1 - (calculateStd(intervals) / avgInterval) // 简单的置信度计算
+      confidence: 1 - (calculateStd(intervals) / avgInterval)
     };
   },
 

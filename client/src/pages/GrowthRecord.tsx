@@ -27,7 +27,7 @@ const GrowthRecord: React.FC = () => {
 
   const chartData = getGrowthChartData(snakeId);
   const growthRate = calculateGrowthRate(chartData.weights, chartData.dates);
-  const nextShedding = predictNextShedding();
+  const nextShedding = predictNextShedding(snakeId);
 
   return (
     <div className="p-4">

@@ -25,7 +25,7 @@ export interface GrowthState {
   error: string | null;
   selectedRecord: WeightRecord | SheddingRecord | null;
   calculateGrowthRate: (weights: number[], dates: string[]) => number;
-  predictNextShedding: () => { predictedDate: Date; confidence: number } | null;
+  predictNextShedding: (snakeId: number) => { predictedDate: Date; confidence: number };
   getGrowthChartData: (snakeId: number) => GrowthChartData;
   fetchWeightRecords: () => Promise<void>;
   fetchSheddingRecords: () => Promise<void>;
