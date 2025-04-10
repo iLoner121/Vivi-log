@@ -1,20 +1,39 @@
+import type { Dayjs } from 'dayjs';
+
 // 蛇类爬宠基本信息
 export interface Snake {
   id: number;
-  name: string;           // 昵称
-  code: string;           // 编号
-  species: string;        // 物种
-  gene: string;          // 基因
-  gender: 'male' | 'female';  // 性别
-  birthDate: string;     // 出生日期
-  source?: string;       // 来源信息
-  price?: number;        // 价格
-  notes?: string;        // 备注
-  color?: string;        // 颜色
-  pattern?: string;      // 花纹特征
-  imageUrl?: string;     // 图片URL
-  createdAt: string;     // 创建时间
-  updatedAt: string;     // 更新时间
+  code: string;
+  name: string;
+  species: string;
+  gene: string;
+  gender: 'male' | 'female' | 'unknown';
+  birthDate: string;
+  source?: string;
+  price?: number;
+  length?: number;
+  weight?: number;
+  color?: string;
+  pattern?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 蛇类表单数据类型
+export interface SnakeFormData {
+  name: string;
+  species: string;
+  gene: string;
+  gender: 'male' | 'female' | 'unknown';
+  birthDate: Dayjs | null;
+  source?: string;
+  price?: number;
+  length?: number;
+  weight?: number;
+  color?: string;
+  pattern?: string;
+  notes?: string;
 }
 
 // 喂食记录
