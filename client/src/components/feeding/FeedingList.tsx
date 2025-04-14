@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Table, Button, Space, Popconfirm, message, Tag } from 'antd'
 import { useFeedingStore } from '../../stores/feedingStore'
 import { useSnakeStore } from '../../stores/snakeStore'
@@ -15,8 +15,13 @@ const FeedingList: React.FC<FeedingListProps> = ({
   snakeId,
   onEdit
 }) => {
-  const { feedings, loading, deleteFeeding, getFeedingsBySnakeId } = useFeedingStore()
-  const { snakes } = useSnakeStore()
+  const { feedings, loading: feedingLoading, deleteFeeding, getFeedingsBySnakeId } = useFeedingStore()
+  const { snakes, loading: snakeLoading, fetchSnakes } = useSnakeStore()
+  
+  // 初始化时获取爬宠数据
+  useEffect(() => {
+    fetchSnakes()
+  }, [fetchSnakes])
   
   const dataSource = snakeId ? getFeedingsBySnakeId(snakeId) : feedings
   
@@ -112,7 +117,7 @@ const FeedingList: React.FC<FeedingListProps> = ({
       dataSource={dataSource}
       columns={columns}
       rowKey="id"
-      loading={loading}
+      loading={feedingLoading || snakeLoading}
       scroll={{ x: 1000 }}
       pagination={{
         pageSize: 10,

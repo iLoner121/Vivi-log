@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons'
 import FeedingList from '../components/feeding/FeedingList'
 import FeedingForm from '../components/feeding/FeedingForm'
 import { useFeedingStore } from '../stores/feedingStore'
-import { Feeding, FeedingFormData } from '../types/feeding'
+import { Feeding } from '../types/feeding'
 
 const FeedingManagement: React.FC = () => {
   const { fetchFeedings } = useFeedingStore()
@@ -28,6 +28,12 @@ const FeedingManagement: React.FC = () => {
   const handleModalClose = () => {
     setIsModalVisible(false)
     setEditingFeeding(null)
+  }
+
+  const handleSuccess = () => {
+    handleModalClose()
+    fetchFeedings()
+    message.success(editingFeeding ? '更新成功' : '添加成功')
   }
 
   return (
@@ -55,11 +61,8 @@ const FeedingManagement: React.FC = () => {
         width={600}
       >
         <FeedingForm
-          initialValues={editingFeeding || undefined}
-          onSuccess={() => {
-            handleModalClose()
-            message.success(editingFeeding ? '更新成功' : '添加成功')
-          }}
+          initialValues={editingFeeding}
+          onSuccess={handleSuccess}
           onCancel={handleModalClose}
         />
       </Modal>
