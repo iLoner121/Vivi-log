@@ -13,13 +13,24 @@ const SnakeDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getSnakeById, fetchSnakes, loading, updateSnake } = useSnakeStore();
-  const { getWeightRecordsBySnakeId, getSheddingRecordsBySnakeId, predictNextShedding } = useGrowthStore();
+  const { 
+    getWeightRecordsBySnakeId, 
+    getSheddingRecordsBySnakeId, 
+    predictNextShedding,
+    fetchWeightRecords,
+    fetchSheddingRecords
+  } = useGrowthStore();
   const [snake, setSnake] = useState<Snake | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     loadSnake();
-  }, [id]);
+    if (id) {
+      // 获取最新的体重和蜕皮记录
+      fetchWeightRecords();
+      fetchSheddingRecords();
+    }
+  }, [id, fetchWeightRecords, fetchSheddingRecords]);
 
   const loadSnake = () => {
     if (id) {
@@ -73,12 +84,13 @@ const SnakeDetail: React.FC = () => {
   const sheddingRecords = getSheddingRecordsBySnakeId(snake.id);
   const nextShedding = predictNextShedding(snake.id);
 
+  // 按日期降序排序，获取最新记录
   const latestWeight = weightRecords.length > 0 
-    ? weightRecords.sort((a: WeightRecord, b: WeightRecord) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
+    ? [...weightRecords].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
     : null;
 
   const latestShedding = sheddingRecords.length > 0
-    ? sheddingRecords.sort((a: SheddingRecord, b: SheddingRecord) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
+    ? [...sheddingRecords].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
     : null;
 
   return (
@@ -92,29 +104,37 @@ const SnakeDetail: React.FC = () => {
           返回
         </Button>
         <h1 className="text-2xl font-bold ml-4">
-          {snake.name} ({snake.code})
+          {snake.name} ({snake.code}) 的详细信息
         </h1>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <Descriptions title="基本信息" bordered>
-            <Descriptions.Item label="编号">{snake.code}</Descriptions.Item>
-            <Descriptions.Item label="昵称">{snake.name}</Descriptions.Item>
-            <Descriptions.Item label="物种">{snake.species}</Descriptions.Item>
-            <Descriptions.Item label="基因">{snake.gene || '-'}</Descriptions.Item>
+      <div className="space-y-4">
+        <Card title="基本信息">
+          <Descriptions column={2}>
+            <Descriptions.Item label="昵称">
+              {snake.name}
+            </Descriptions.Item>
+            <Descriptions.Item label="编号">
+              {snake.code}
+            </Descriptions.Item>
+            <Descriptions.Item label="物种">
+              {snake.species}
+            </Descriptions.Item>
+            <Descriptions.Item label="基因">
+              {snake.gene || '未知'}
+            </Descriptions.Item>
             <Descriptions.Item label="性别">
-              {snake.gender === 'male' ? '雄性' : snake.gender === 'female' ? '雌性' : '未知'}
+              {snake.gender}
             </Descriptions.Item>
             <Descriptions.Item label="出生日期">
-              {dayjs(snake.birthDate).format('YYYY-MM-DD')}
+              {snake.birthDate ? dayjs(snake.birthDate).format('YYYY-MM-DD') : '未知'}
             </Descriptions.Item>
-            <Descriptions.Item label="来源">{snake.source || '-'}</Descriptions.Item>
-            <Descriptions.Item label="价格">{snake.price ? `¥${snake.price}` : '-'}</Descriptions.Item>
-            <Descriptions.Item label="体长">{snake.length ? `${snake.length}cm` : '-'}</Descriptions.Item>
-            <Descriptions.Item label="体重">{snake.weight ? `${snake.weight}g` : '-'}</Descriptions.Item>
-            <Descriptions.Item label="颜色">{snake.color || '-'}</Descriptions.Item>
-            <Descriptions.Item label="花纹特征">{snake.pattern || '-'}</Descriptions.Item>
+            <Descriptions.Item label="来源">
+              {snake.source}
+            </Descriptions.Item>
+            <Descriptions.Item label="价格">
+              {snake.price ? `¥${snake.price}` : '未知'}
+            </Descriptions.Item>
             <Descriptions.Item label="创建时间">
               {dayjs(snake.createdAt).format('YYYY-MM-DD HH:mm:ss')}
             </Descriptions.Item>
@@ -176,11 +196,10 @@ const SnakeDetail: React.FC = () => {
       </Space>
 
       <Modal
-        title="编辑爬宠"
+        title="编辑爬宠信息"
         open={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={null}
-        width={720}
       >
         <SnakeForm
           initialValues={snake}

@@ -7,14 +7,14 @@ import { useSnakeStore } from '../stores/snakeStore';
 import { useGrowthStore } from '../stores/growthStore';
 
 const GrowthRecord: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { snakeId } = useParams<{ snakeId: string }>();
   const navigate = useNavigate();
-  const snakeId = Number(id);
+  const snakeIdNumber = Number(snakeId);
 
   const { getSnakeById } = useSnakeStore();
   const { calculateGrowthRate, predictNextShedding, getGrowthChartData } = useGrowthStore();
 
-  const snake = getSnakeById(snakeId);
+  const snake = getSnakeById(snakeIdNumber);
 
   useEffect(() => {
     if (!snake) {
@@ -25,9 +25,9 @@ const GrowthRecord: React.FC = () => {
 
   if (!snake) return null;
 
-  const chartData = getGrowthChartData(snakeId);
+  const chartData = getGrowthChartData(snakeIdNumber);
   const growthRate = calculateGrowthRate(chartData.weights, chartData.dates);
-  const nextShedding = predictNextShedding(snakeId);
+  const nextShedding = predictNextShedding(snakeIdNumber);
 
   return (
     <div className="p-4">
@@ -58,7 +58,7 @@ const GrowthRecord: React.FC = () => {
       </div>
 
       <Card>
-        <GrowthRecordList snakeId={snakeId} />
+        <GrowthRecordList snakeId={snakeIdNumber} />
       </Card>
     </div>
   );

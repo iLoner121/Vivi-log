@@ -2,17 +2,16 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ConfigProvider, Layout, Menu } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
-import { HomeOutlined, BarChartOutlined, SettingOutlined, DatabaseOutlined, AppstoreOutlined } from '@ant-design/icons';
+import { HomeOutlined, BarChartOutlined, SettingOutlined, AppstoreOutlined } from '@ant-design/icons';
 import SnakeManagement from './pages/SnakeManagement';
 import SnakeDetail from './pages/SnakeDetail';
 import GrowthRecord from './pages/GrowthRecord';
 import Settings from './pages/Settings';
 import Statistics from './pages/Statistics';
-import DataManagement from './pages/DataManagement';
 import FeedingManagement from './pages/FeedingManagement';
 import './index.css';
 
-const { Header, Content, Sider } = Layout;
+const { Content, Sider } = Layout;
 
 const App: React.FC = () => {
   return (
@@ -46,12 +45,6 @@ const App: React.FC = () => {
                 },
                 {
                   key: '4',
-                  icon: <DatabaseOutlined />,
-                  label: '数据管理',
-                  onClick: () => window.location.href = '/data'
-                },
-                {
-                  key: '5',
                   icon: <SettingOutlined />,
                   label: '系统设置',
                   onClick: () => window.location.href = '/settings'
@@ -60,17 +53,15 @@ const App: React.FC = () => {
             />
           </Sider>
           <Layout>
-            <Header style={{ background: '#fff', padding: 0 }} />
-            <Content style={{ margin: '24px 16px', padding: 24, background: '#fff' }}>
+            <Content style={{ padding: '24px' }}>
               <Routes>
                 <Route path="/" element={<SnakeManagement />} />
                 <Route path="/snakes" element={<SnakeManagement />} />
                 <Route path="/snakes/:id" element={<SnakeDetail />} />
-                <Route path="/growth/:id" element={<GrowthRecord />} />
-                <Route path="/statistics" element={<Statistics />} />
-                <Route path="/data" element={<DataManagement />} />
-                <Route path="/settings" element={<Settings />} />
+                <Route path="/growth/:snakeId" element={<GrowthRecord />} />
                 <Route path="/feedings" element={<FeedingManagement />} />
+                <Route path="/statistics" element={<Statistics />} />
+                <Route path="/settings" element={<Settings />} />
               </Routes>
             </Content>
           </Layout>
