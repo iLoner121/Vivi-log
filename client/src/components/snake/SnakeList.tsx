@@ -24,37 +24,37 @@ const SnakeList: React.FC<SnakeListProps> = ({
 
   const columns: ColumnsType<Snake> = [
     {
-      title: '序号',
-      key: 'index',
-      width: 80,
-      render: (_, __, index) => index + 1,
-    },
-    {
       title: '编号',
       dataIndex: 'code',
-      width: 100,
-      render: (code: string) => {
-        console.log('Snake code:', code);
-        return code || '-';
-      },
+      width: '10%',
+      render: (code: string) => (
+        <Tag color="blue">{code || '-'}</Tag>
+      ),
     },
     {
       title: '昵称',
       dataIndex: 'name',
       key: 'name',
-      width: 120,
+      width: '10%',
     },
     {
       title: '物种',
       dataIndex: 'species',
       key: 'species',
-      width: 150,
+      width: '15%',
+    },
+    {
+      title: '基因',
+      dataIndex: 'gene',
+      key: 'gene',
+      width: '15%',
+      render: (gene: string) => gene || '-',
     },
     {
       title: '性别',
       dataIndex: 'gender',
       key: 'gender',
-      width: 80,
+      width: '8%',
       render: (gender: string) => (
         <Tag color={gender === 'male' ? 'blue' : gender === 'female' ? 'pink' : 'default'}>
           {gender === 'male' ? '雄性' : gender === 'female' ? '雌性' : '未知'}
@@ -64,7 +64,7 @@ const SnakeList: React.FC<SnakeListProps> = ({
     {
       title: '年龄',
       key: 'age',
-      width: 100,
+      width: '8%',
       render: (_, record) => {
         const birthDate = dayjs(record.birthDate);
         const age = dayjs().diff(birthDate, 'year');
@@ -72,22 +72,26 @@ const SnakeList: React.FC<SnakeListProps> = ({
       },
     },
     {
-      title: '体重',
+      title: '体重(g)',
       dataIndex: 'weight',
       key: 'weight',
-      width: 100,
-      render: (weight?: number) => (weight ? `${weight}g` : '-'),
+      width: '8%',
+      align: 'right' as const,
+      render: (weight?: number) => (weight ? `${weight}` : '-'),
     },
     {
-      title: '来源',
-      dataIndex: 'source',
-      key: 'source',
-      width: 120,
+      title: '体长(cm)',
+      dataIndex: 'length',
+      key: 'length',
+      width: '8%',
+      align: 'right' as const,
+      render: (length?: number) => (length ? `${length}` : '-'),
     },
     {
       title: '操作',
       key: 'action',
-      width: 250,
+      width: '28%',
+      fixed: 'right' as const,
       render: (_, record) => (
         <Space size="middle">
           <Button type="link" onClick={() => onView(record)}>
@@ -113,7 +117,7 @@ const SnakeList: React.FC<SnakeListProps> = ({
       dataSource={data}
       loading={loading}
       rowKey="id"
-      scroll={{ x: 1000 }}
+      scroll={{ x: 1300 }}
       pagination={{
         defaultPageSize: 10,
         showSizeChanger: true,
