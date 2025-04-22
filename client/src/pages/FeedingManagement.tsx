@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons'
 import FeedingList from '../components/feeding/FeedingList'
 import FeedingForm from '../components/feeding/FeedingForm'
 import { useFeedingStore } from '../stores/feedingStore'
-import { Feeding } from '../types/feeding'
+import { Feeding } from '../types'
 
 const FeedingManagement: React.FC = () => {
   const { fetchFeedings } = useFeedingStore()

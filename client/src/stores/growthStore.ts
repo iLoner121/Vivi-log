@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { GrowthState, WeightRecord, SheddingRecord, GrowthChartData } from '../types/growth';
+import { GrowthState, WeightRecord, SheddingRecord, GrowthChartData } from '../types';
 import { StorageService } from '../services/storage';
 
 const STORAGE_KEY = {

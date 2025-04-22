@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, DatePicker, Switch, Input, Button, message } from 'antd';
 import { useGrowthStore } from '../../stores/growthStore';
-import { SheddingRecord } from '../../types/growth';
+import { SheddingRecord } from '../../types';
 import dayjs from 'dayjs';
 
 interface SheddingRecordFormProps {

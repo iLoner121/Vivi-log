@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, DatePicker, InputNumber, Input, Button, message } from 'antd';
 import { useGrowthStore } from '../../stores/growthStore';
-import { WeightRecord } from '../../types/growth';
+import { WeightRecord } from '../../types';
 import dayjs from 'dayjs';
 
 interface WeightRecordFormProps {

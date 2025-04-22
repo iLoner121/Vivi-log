@@ -4,9 +4,7 @@ import { UploadOutlined, DeleteOutlined, DownloadOutlined } from '@ant-design/ic
 import { useSnakeStore } from '../stores/snakeStore';
 import { useGrowthStore } from '../stores/growthStore';
 import { useFeedingStore } from '../stores/feedingStore';
-import { Snake } from '../types';
-import { WeightRecord, SheddingRecord } from '../types/growth';
-import { Feeding } from '../types/feeding';
+import { Snake, WeightRecord, SheddingRecord, Feeding } from '../types';
 
 interface ImportData {
   snakes?: Snake[];

@@ -42,22 +42,81 @@ export interface Feeding {
   snakeId: number;       // 关联的蛇ID
   date: string;          // 喂食日期
   foodType: string;      // 食物类型
-  foodWeight: number;    // 食物重量
-  snakeWeight: number;   // 蛇的体重
+  weight: number;        // 食物重量
+  quantity: number;      // 食物数量
   notes?: string;        // 备注
   createdAt: string;     // 创建时间
   updatedAt: string;     // 更新时间
 }
 
-// 蜕皮记录
-export interface Shedding {
+// 喂食表单数据类型
+export interface FeedingFormData {
+  snakeId: number;
+  date: string;
+  foodType: string;
+  weight: number;
+  quantity: number;
+  notes?: string;
+}
+
+// 喂食记录筛选条件
+export interface FeedingFilters {
+  snakeId?: number;
+  startDate?: string;
+  endDate?: string;
+  foodType?: string;
+}
+
+// 体重记录
+export interface WeightRecord {
   id: number;
-  snakeId: number;       // 关联的蛇ID
-  date: string;          // 蜕皮日期
-  completeness: number;  // 蜕皮完整度（1-100）
-  notes?: string;        // 备注
-  createdAt: string;     // 创建时间
-  updatedAt: string;     // 更新时间
+  snakeId: number;
+  weight: number; // 体重（克）
+  date: string; // 记录日期
+  notes?: string; // 备注
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 蜕皮记录
+export interface SheddingRecord {
+  id: number;
+  snakeId: number;
+  date: string; // 蜕皮日期
+  isComplete: boolean; // 是否完整蜕皮
+  notes?: string; // 备注
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 成长记录状态
+export interface GrowthState {
+  weightRecords: WeightRecord[];
+  sheddingRecords: SheddingRecord[];
+  loading: boolean;
+  error: string | null;
+  selectedRecord: WeightRecord | SheddingRecord | null;
+  calculateGrowthRate: (weights: number[], dates: string[]) => number;
+  predictNextShedding: (snakeId: number) => { predictedDate: Date; confidence: number };
+  getGrowthChartData: (snakeId: number) => GrowthChartData;
+  getWeightRecordsBySnakeId: (snakeId: number) => WeightRecord[];
+  getSheddingRecordsBySnakeId: (snakeId: number) => SheddingRecord[];
+  fetchWeightRecords: () => Promise<void>;
+  fetchSheddingRecords: () => Promise<void>;
+  addWeightRecord: (record: Omit<WeightRecord, 'id'>) => Promise<void>;
+  updateWeightRecord: (id: number, updates: Partial<WeightRecord>) => Promise<void>;
+  deleteWeightRecord: (id: number) => Promise<void>;
+  addSheddingRecord: (record: Omit<SheddingRecord, 'id'>) => Promise<void>;
+  updateSheddingRecord: (id: number, updates: Partial<SheddingRecord>) => Promise<void>;
+  deleteSheddingRecord: (id: number) => Promise<void>;
+  calculateStd: (values: number[]) => number;
+}
+
+// 成长图表数据
+export interface GrowthChartData {
+  dates: string[];
+  weights: number[];
+  sheddingDates: string[];
 }
 
 // 繁殖记录

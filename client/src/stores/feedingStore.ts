@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { Feeding, FeedingFormData, FeedingFilters } from '../types/feeding'
+import { Feeding, FeedingFormData, FeedingFilters } from '../types'
 import { StorageService } from '../services/storage'
 
 const feedingStorage = new StorageService<Feeding>('vivi-log:feedings')

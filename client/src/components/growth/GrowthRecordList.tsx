@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Tabs, Button, Modal, message } from 'antd';
 import { useGrowthStore } from '../../stores/growthStore';
-import { WeightRecord, SheddingRecord } from '../../types/growth';
+import { WeightRecord, SheddingRecord } from '../../types';
 import WeightRecordForm from './WeightRecordForm';
 import SheddingRecordForm from './SheddingRecordForm';
 import dayjs from 'dayjs';

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { Form, Input, InputNumber, DatePicker, Select, Button, message } from 'antd'
 import { useFeedingStore } from '../../stores/feedingStore'
-import { Feeding, FeedingFormData } from '../../types/feeding'
+import { Feeding, FeedingFormData } from '../../types'
 import { useSnakeStore } from '../../stores/snakeStore'
 import dayjs from 'dayjs'
 

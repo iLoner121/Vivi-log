@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { Table, Button, Space, Popconfirm, message, Tag } from 'antd'
 import { useFeedingStore } from '../../stores/feedingStore'
 import { useSnakeStore } from '../../stores/snakeStore'
-import { Feeding } from '../../types/feeding'
+import { Feeding } from '../../types'
 import dayjs from 'dayjs'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 
