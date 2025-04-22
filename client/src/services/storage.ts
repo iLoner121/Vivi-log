@@ -1,4 +1,4 @@
-import { Snake, Feeding, Shedding, Breeding } from '../types';
+import { Snake, Feeding, SheddingRecord, Breeding } from '../types';
 
 // 存储键名常量
 const STORAGE_KEYS = {
@@ -144,7 +144,7 @@ class SnakeStorageService extends StorageService<Snake> {
 // 导出具体的存储服务实例
 export const snakeStorage = new SnakeStorageService();
 export const feedingStorage = new StorageService<Feeding>(STORAGE_KEYS.FEEDINGS);
-export const sheddingStorage = new StorageService<Shedding>(STORAGE_KEYS.SHEDDINGS);
+export const sheddingStorage = new StorageService<SheddingRecord>(STORAGE_KEYS.SHEDDINGS);
 export const breedingStorage = new StorageService<Breeding>(STORAGE_KEYS.BREEDINGS);
 
 // 导出存储服务类（用于测试或创建新的存储实例）
