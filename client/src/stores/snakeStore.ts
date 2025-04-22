@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { Snake, Gender } from '../shared/types/snake'
+import { Snake } from '../types/index'
 import { snakeStorage } from '../services/storage'
 
 interface SnakeState {

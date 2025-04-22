@@ -1,4 +1,4 @@
-import { Snake } from '../../shared/types/snake';
+import { Snake } from '../types/index';
 
 // 开发环境检测
 const isDev = process.env.NODE_ENV === 'development';
